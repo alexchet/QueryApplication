@@ -47,9 +47,6 @@ public class Common {
 	{
 		try
 		{
-		    // Define constants for filters.
-		    final String PARTITION_KEY = "PartitionKey";
-		    
 		    CloudStorageAccount storageAccount = storageConnect();
 		    
 		    // Create the table client.
@@ -58,22 +55,50 @@ public class Common {
 		    // Create a cloud table object for the table.
 		    CloudTable cloudTable = tableClient.getTableReference("SpeedCameras");
 	
-		    // Create a filter condition where the partition key is "Smith".
-		    String partitionFilter = TableQuery.generateFilterCondition(
-		        PARTITION_KEY,
-		        QueryComparisons.EQUAL,
-		        "43");
-	
-		    System.out.println(partitionFilter);
-		    // Specify a partition query, using "Smith" as the partition key filter.
 		    TableQuery<CameraEntity> partitionQuery =
-		        TableQuery.from(CameraEntity.class)
-		        .where(partitionFilter);
+		        TableQuery.from(CameraEntity.class);
 	
 		    // Loop through the results, displaying information about the entity.
 		    for (CameraEntity entity : cloudTable.execute(partitionQuery)) {
 		        System.out.println(entity.getPartitionKey() +
 		            " " + entity.getRowKey() +
+		            "\t" + entity.toString());
+		    }
+		}
+		catch (Exception e)
+		{
+		    // Output the stack trace.
+		    e.printStackTrace();
+		}
+	}
+	
+	public static void retreivePriorityVehicles()
+	{
+		try
+		{
+		    // Define constants for filters.
+		    final String PRIORITY = "Priority";
+		    
+		    CloudStorageAccount storageAccount = storageConnect();
+		    
+		    // Create the table client.
+		    CloudTableClient tableClient = storageAccount.createCloudTableClient();
+	
+		    // Create a cloud table object for the table.
+		    CloudTable cloudTable = tableClient.getTableReference("VehiclesSpeeding");
+
+		    String partitionFilter = TableQuery.generateFilterCondition(
+		        PRIORITY,
+		        QueryComparisons.EQUAL,
+		        "PRIORITY");
+		    
+		    TableQuery<VehicleEntity> partitionQuery =
+		        TableQuery.from(VehicleEntity.class)
+		        .where(partitionFilter);
+	
+		    // Loop through the results, displaying information about the entity.
+		    for (VehicleEntity entity : cloudTable.execute(partitionQuery)) {
+		        System.out.println(entity.getPartitionKey() + " " + entity.getRowKey() +
 		            "\t" + entity.toString());
 		    }
 		}
